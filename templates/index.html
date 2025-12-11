@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Oluşturucu - Ana Sayfa</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <i class="fas fa-file-pdf"></i>
+                    Profesyonel PDF Oluşturucu
+                </h1>
+                <p class="hero-subtitle">
+                    Barkodlu ürün etiketleri ve dijital evraklar oluşturun
+                </p>
+            </div>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-barcode"></i>
+                </div>
+                <h3>Barkod & Etiket Oluşturucu</h3>
+                <p>Ürün bilgilerini girin, barkod oluşturun ve profesyonel etiketleri PDF olarak indirin.</p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> Otomatik barkod oluşturma</li>
+                    <li><i class="fas fa-check"></i> Logo yükleme desteği</li>
+                    <li><i class="fas fa-check"></i> Profesyonel PDF çıktısı</li>
+                    <li><i class="fas fa-check"></i> Responsive tasarım</li>
+                </ul>
+                <a href="{{ url_for('barcode_generator') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i>
+                    Başla
+                </a>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h3>Dijital Evrak & Rapor Oluşturucu</h3>
+                <p>Kurumsal belgeler, raporlar ve evraklar oluşturun. Logo ve imza ekleyin.</p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> Logo ve imza yükleme</li>
+                    <li><i class="fas fa-check"></i> Kurumsal tasarım</li>
+                    <li><i class="fas fa-check"></i> Otomatik tarih ekleme</li>
+                    <li><i class="fas fa-check"></i> Profesyonel PDF formatı</li>
+                </ul>
+                <a href="{{ url_for('document_generator') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i>
+                    Başla
+                </a>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>Neden Bu Aracı Kullanmalısınız?</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <i class="fas fa-rocket"></i>
+                    <h4>Hızlı ve Kolay</h4>
+                    <p>Dakikalar içinde profesyonel PDF'ler oluşturun</p>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h4>Responsive Tasarım</h4>
+                    <p>Tüm cihazlarda mükemmel çalışır</p>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>Güvenli</h4>
+                    <p>Verileriniz güvende, dosyalar geçici olarak saklanır</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>&copy; 2024 PDF Oluşturucu. Tüm hakları saklıdır.</p>
+    </footer>
+</body>
+</html>

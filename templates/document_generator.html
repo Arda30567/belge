@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dijital Evrak & Rapor Oluşturucu</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <a href="{{ url_for('index') }}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Ana Sayfa
+            </a>
+            <h1>
+                <i class="fas fa-file-contract"></i>
+                Dijital Evrak & Rapor Oluşturucu
+            </h1>
+            <p>Kurumsal belgeler ve raporlar oluşturun, PDF olarak indirin</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="documentForm" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="company_name">
+                            <i class="fas fa-building"></i>
+                            Firma Adı *
+                        </label>
+                        <input type="text" id="company_name" name="company_name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="title">
+                            <i class="fas fa-heading"></i>
+                            Belge Başlığı *
+                        </label>
+                        <input type="text" id="title" name="title" placeholder="Örn: Teslimat Tutanağı, Görev Belgesi" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="authorized_name">
+                            <i class="fas fa-user-tie"></i>
+                            Yetkili Adı *
+                        </label>
+                        <input type="text" id="authorized_name" name="authorized_name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date">
+                            <i class="fas fa-calendar"></i>
+                            Tarih *
+                        </label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="description">
+                        <i class="fas fa-align-left"></i>
+                        Açıklama Metni *
+                    </label>
+                    <textarea id="description" name="description" rows="6" placeholder="Belge içeriğini buraya yazın..." required></textarea>
+                </div>
+                
+                <div class="file-uploads-grid">
+                    <div class="form-group">
+                        <label for="logo">
+                            <i class="fas fa-image"></i>
+                            Logo Yükle (PNG/JPEG)
+                        </label>
+                        <div class="file-upload">
+                            <input type="file" id="logo" name="logo" accept=".png,.jpg,.jpeg">
+                            <div class="file-upload-custom">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Logo seçin</span>
+                            </div>
+                        </div>
+                        <div id="logo-preview" class="file-preview" style="display: none;">
+                            <img id="logo-preview-img" src="" alt="Logo Önizleme">
+                            <button type="button" class="remove-file" onclick="removeLogo()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signature">
+                            <i class="fas fa-signature"></i>
+                            İmza Yükle (PNG/JPEG)
+                        </label>
+                        <div class="file-upload">
+                            <input type="file" id="signature" name="signature" accept=".png,.jpg,.jpeg">
+                            <div class="file-upload-custom">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>İmza seçin</span>
+                            </div>
+                        </div>
+                        <div id="signature-preview" class="file-preview" style="display: none;">
+                            <img id="signature-preview-img" src="" alt="İmza Önizleme">
+                            <button type="button" class="remove-file" onclick="removeSignature()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="resetForm()">
+                        <i class="fas fa-redo"></i>
+                        Temizle
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        PDF Oluştur
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Loading Modal -->
+        <div id="loadingModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <h3>PDF Oluşturuluyor...</h3>
+                <p>Lütfen bekleyin, belgeniz hazırlanıyor.</p>
+            </div>
+        </div>
+        
+        <!-- Error Modal -->
+        <div id="errorModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>Hata</h3>
+                <p id="errorMessage"></p>
+                <button type="button" class="btn btn-primary" onclick="closeErrorModal()">
+                    Tamam
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Set today's date as default
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // File upload customization
+        const logoInput = document.getElementById('logo');
+        const logoPreview = document.getElementById('logo-preview');
+        const logoPreviewImg = document.getElementById('logo-preview-img');
+        
+        const signatureInput = document.getElementById('signature');
+        const signaturePreview = document.getElementById('signature-preview');
+        const signaturePreviewImg = document.getElementById('signature-preview-img');
+        
+        logoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    logoPreviewImg.src = e.target.result;
+                    logoPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        signatureInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    signaturePreviewImg.src = e.target.result;
+                    signaturePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        function removeLogo() {
+            logoInput.value = '';
+            logoPreview.style.display = 'none';
+            logoPreviewImg.src = '';
+        }
+        
+        function removeSignature() {
+            signatureInput.value = '';
+            signaturePreview.style.display = 'none';
+            signaturePreviewImg.src = '';
+        }
+        
+        function resetForm() {
+            document.getElementById('documentForm').reset();
+            document.getElementById('date').valueAsDate = new Date();
+            removeLogo();
+            removeSignature();
+        }
+        
+        // Form submission
+        document.getElementById('documentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const loadingModal = document.getElementById('loadingModal');
+            
+            // Show loading modal
+            loadingModal.style.display = 'flex';
+            
+            fetch('{{ url_for("generate_document") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'belge_' + new Date().getTime() + '.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                loadingModal.style.display = 'none';
+            })
+            .catch(error => {
+                loadingModal.style.display = 'none';
+                showError(error.error || 'Bir hata oluştu');
+            });
+        });
+        
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorModal').style.display = 'flex';
+        }
+        
+        function closeErrorModal() {
+            document.getElementById('errorModal').style.display = 'none';
+        }
+        
+        // Close modals on outside click
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
